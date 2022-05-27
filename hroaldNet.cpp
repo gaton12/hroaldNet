@@ -39,14 +39,14 @@ void netLayer::setWeights(double value)
     {
         for (int y = 0; y < A.getCols(); y++)
         {
-            A.setElement(x, y, value + ((rand()%10 + 1)*(0.1 * value)));
+            A.setElement(x, y, value /* + ((rand()%10 + 1)*(0.1 * value)) */);
         }
     }
     for (int x = 0; x < B.getRows(); x++)
     {
         for (int y = 0; y < B.getCols(); y++)
         {
-            B.setElement(x, y, value + ((rand()%10 + 1)*(0.1 * value)));
+            B.setElement(x, y, value /* + ((rand()%10 + 1)*(0.1 * value)) */);
         }
     }
     
@@ -112,7 +112,7 @@ void neuralNet::setWeights(double value)
     {
         for (int y = 0; y < lastA.getCols(); y++)
         {
-            lastA.setElement(x, y, value + ((rand()%10 + 1)*(0.1*value)));
+            lastA.setElement(x, y, value /* + ((rand()%10 + 1)*(0.1*value)) */);
         }
     }
     
@@ -132,7 +132,7 @@ void neuralNet::updateMatrices(matrix newCoords)
             }
         }
         for (int x = 0; x < hiddenLayers[j].getB().getRows(); x++)
-        {
+        {   
             for (int y = 0; y < hiddenLayers[j].getB().getCols(); y++)
             {
                 hiddenLayers[j].setBElement(x, y, hiddenLayers[j].getBElement(x, y) + newCoords.getElement(0, counter));
@@ -151,6 +151,7 @@ void neuralNet::updateMatrices(matrix newCoords)
             counter++;
         }
     }
+    printHiddenLayerMatrix(0);
     //std::cout << counter << std::endl; 
 }
 
@@ -176,6 +177,7 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
         {   
             S.push_back({}); 
             Stemp = sigmafy((hiddenLayers[0].getA() * trainInput[j]) + hiddenLayers[0].getB());
+            //Stemp.printMatrix();
             S[j].push_back(Stemp);
             for (int i = 1; i < hiddenLayers.size(); i++)
             {
@@ -192,9 +194,10 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
 
         for (int i = 0; i < delta.size(); i++)
         {
-            lossValue += (delta[i] * delta[i]) / delta.size();
+            lossValue += (delta[i] * delta[i]);
         }
-        if (iteration % 100 == 0)
+        lossValue = lossValue / delta.size();
+        if (iteration % 1 == 0)
         {
             std::cout << "Iteration: " << iteration << " Loss: " << lossValue << std::endl;
         }
@@ -203,6 +206,7 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
         {
             newCoordsParts.push_back({});
             SPtemp = getPrimeMatrix(trainInput[j], hiddenLayers[0].getA());
+            //SPtemp.printMatrix();
             //std::cout << "bajs" << std::endl;
             SPrime.push_back(SPtemp);
             for (int i = 1; i < hiddenLayers.size(); i++)
@@ -211,24 +215,29 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
                 //S[j][i-1].printMatrix();
                 SPtemp = getPrimeMatrix(S[j][i-1], hiddenLayers[i].getA());
                 //SPtemp.printMatrix();
+                //S[j][i-1].printMatrix();
                 //std::cout << "bajsen" << std::endl;
                 SPrime.push_back(SPtemp);
             }
             YPrime = S[j][S[j].size() - 1].transpose();
+            //YPrime.printMatrix();
             YPrimes.push_back(YPrime);
             // TODO: fix this:
             for (int k = 1; k < hiddenLayers.size()+1; k++)
             {
+                //std::cout << "bajs" << std::endl;
                 newCoordsTemp = (lastA * S[j][S[j].size() - 1]);
                 for (int i = hiddenLayers.size()-k; i > 0; i--)
                 {
+                    //std::cout << "korv" << std::endl;
                     newCoordsTemp *= hiddenLayers[hiddenLayers.size()-i].getA();
-                    //newCoordsTemp.printMatrix();
                     newCoordsTemp *= S[j][S[j].size()-1-i];
                 }
                 newCoordsTemp *= SPrime[k-1];
+                //newCoordsTemp.printMatrix();
                 newCoordsParts[j].push_back(newCoordsTemp);
             }
+            SPrime.clear();
         }
 
         ///// PRINTING /////
@@ -251,13 +260,15 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
                 newCoords[i] = newCoords[i].append(newCoordsParts[i][j]);
             }
             newCoords[i] = newCoords[i].append(YPrimes[i]);
+            //newCoords[i].printMatrix();
         }
 
-        grad = newCoords[0];
-        for (int i = 1; i < newCoords.size(); i++)
+        grad = (newCoords[0]*delta[0]);
+        for (int i = 1; i < trainInput.size(); i++)
         {
             grad += (newCoords[i] * delta[i]);
         }
+        //grad.printMatrix();
         //std::cout << "Gradient: " << std::endl;
         //grad.printMatrix();
 
@@ -274,6 +285,11 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
         newCoordsParts.clear();
         newCoords.clear();
         YPrimes.clear();
+        Stemp = {};
+        yTemp = {};
+        SPtemp = {};
+        YPrime = {};
+        newCoordsTemp = {};
     }
     
 }
