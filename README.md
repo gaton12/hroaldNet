@@ -1,2 +1,2 @@
 # hroaldNet
-A simple C++ neural network.
+A simple (and unoptimized) C++ neural network library.
