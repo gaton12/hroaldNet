@@ -149,9 +149,13 @@ void neuralNet::updateMatrices(matrix newCoords)
         {
             lastA.setElement(x, y, lastA.getElement(x, y) + newCoords.getElement(0, counter));
             counter++;
+            //lastA.printMatrix();
         }
     }
-    printHiddenLayerMatrix(0);
+    /* printHiddenLayerMatrix(0);
+    printHiddenLayerMatrix(1);
+    printHiddenLayerMatrix(2);
+    lastA.printMatrix(); */
     //std::cout << counter << std::endl; 
 }
 
@@ -192,12 +196,12 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
             //S.clear();
         }
 
-        for (int i = 0; i < delta.size(); i++)
+        for (int i = 0; i < trainInput.size(); i++)
         {
             lossValue += (delta[i] * delta[i]);
         }
-        lossValue = lossValue / delta.size();
-        if (iteration % 1 == 0)
+        lossValue = lossValue / trainInput.size();
+        if ((iteration % 100 == 0) || (iteration == iterations - 1))
         {
             std::cout << "Iteration: " << iteration << " Loss: " << lossValue << std::endl;
         }
@@ -205,6 +209,7 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
         for (int j = 0; j < trainInput.size(); j++)
         {
             newCoordsParts.push_back({});
+
             SPtemp = getPrimeMatrix(trainInput[j], hiddenLayers[0].getA());
             //SPtemp.printMatrix();
             //std::cout << "bajs" << std::endl;
@@ -219,7 +224,7 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
                 //std::cout << "bajsen" << std::endl;
                 SPrime.push_back(SPtemp);
             }
-            YPrime = S[j][S[j].size() - 1].transpose();
+            YPrime = (S[j][S[j].size() - 1]).transpose();
             //YPrime.printMatrix();
             YPrimes.push_back(YPrime);
             // TODO: fix this:
@@ -274,6 +279,8 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
 
         //(grad * (-0.001)).printMatrix();
         //std::cout << (grad * (-0.001)).getCols() << std::endl;
+        
+        //(grad * (-stepSize)).printMatrix();
 
         updateMatrices(grad * (-stepSize));
 
@@ -309,6 +316,22 @@ matrix neuralNet::test(matrix testInput)
         }
         yTemp = lastA * S[S.size() - 1];
     return yTemp;
+
+            /* S.push_back({}); 
+            Stemp = sigmafy((hiddenLayers[0].getA() * trainInput[j]) + hiddenLayers[0].getB());
+            //Stemp.printMatrix();
+            S[j].push_back(Stemp);
+            for (int i = 1; i < hiddenLayers.size(); i++)
+            {
+                Stemp = sigmafy((hiddenLayers[i].getA() * S[j][i-1]) + hiddenLayers[i].getB());
+                //Stemp.printMatrix();
+                S[j].push_back(Stemp);
+            }
+            yTemp = lastA * S[j][S[j].size() - 1];
+            //yTemp.printMatrix();
+            delta.push_back(yTemp.getElement(0, 0) - trainOutput[j]); */
+
+
 }
 
 

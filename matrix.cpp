@@ -149,11 +149,12 @@ matrix& matrix::operator*=(const matrix& m1) {
     matrix copyLHS = *this;
     matrix copyRHS = m1;
     matrix m2(copyLHS.getRows(), copyRHS.getCols());
+    double sum = 0.0;
     for (int x = 0; x < copyLHS.getRows(); x++)
     {
         for (int y = 0; y < copyRHS.getCols(); y++)
         {
-            double sum = 0.0;
+            sum = 0.0;
             for (int z = 0; z < copyLHS.getCols(); z++)
             {
                 sum += copyLHS.getElement(x, z) * copyRHS.getElement(z, y);
@@ -161,9 +162,10 @@ matrix& matrix::operator*=(const matrix& m1) {
             m2.setElement(x, y, sum);
         }
     }
-    rows = m2.getRows();
+    /* rows = m2.getRows();
     cols = m2.getCols();
-    elements = m2.elements;
+    elements = m2.elements; */
+    *this = m2;
     return *this;
 }
 
