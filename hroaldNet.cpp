@@ -201,7 +201,7 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
             lossValue += (delta[i] * delta[i]);
         }
         lossValue = lossValue / trainInput.size();
-        if ((iteration % 100 == 0) || (iteration == iterations - 1))
+        if ((iteration % 1 == 0) || (iteration == iterations - 1))
         {
             std::cout << "Iteration: " << iteration << " Loss: " << lossValue << std::endl;
         }
@@ -284,7 +284,7 @@ void neuralNet::train(std::vector<matrix> trainInput, std::vector<double> trainO
 
         updateMatrices(grad * (-stepSize));
 
-        lossValue = 0;
+        lossValue = 0.0;
         grad = {};
         S.clear();
         delta.clear();

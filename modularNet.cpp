@@ -6,13 +6,13 @@ using namespace std;
 int main() 
 {   
 
-    cout.precision(17);
+    cout.precision(19);
 
     neuralNet nn(3, 3, 3, 1);
 
     vector<matrix> trainInput = {
         matrix{3,1, {1, 1, 1}},
-        matrix{3,1, {2, 2, 1}}
+        matrix{3,1, {2, 2, 1}},
         /* {3,1, {3, 2, 0}},
         {3,1, {10, 1, 0}}, */
     };
